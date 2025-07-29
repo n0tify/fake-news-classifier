@@ -10,14 +10,14 @@ from nltk.stem import PorterStemmer
 
 nltk.download('stopwords', quiet=True)
 
-# -------------------- PAGE CONFIG --------------------
+# configure the streamlit page
 st.set_page_config(
-    page_title="🧠 Fake News Classifier",
+    page_title="🧠 NewsVerdict",
     page_icon="📰",
     layout="centered"
 )
 
-# -------------------- CSS THEMING --------------------
+# apply custom css styling
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -26,7 +26,6 @@ html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
 }
 
-/* 🌌 Galaxy Gradient for both light & dark */
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(135deg, #1d1e33, #3e1f47, #461f61, #3f2b96, #5f2c82) !important;
     background-size: 400% 400%;
@@ -34,14 +33,12 @@ html, body, [class*="css"] {
     color: white !important;
 }
 
-/* Animate gradient */
 @keyframes galaxyShift {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
 }
 
-/* 🎨 Form elements */
 textarea, .stTextArea textarea {
     background-color: rgba(255, 255, 255, 0.08) !important;
     color: #ffffff !important;
@@ -49,7 +46,6 @@ textarea, .stTextArea textarea {
     border-radius: 10px !important;
 }
 
-/* ✨ Button styles */
 .stButton button {
     background: linear-gradient(to right, #667eea, #764ba2);
     color: white !important;
@@ -65,7 +61,6 @@ textarea, .stTextArea textarea {
     transform: scale(1.05);
 }
 
-/* ✨ Result box styling */
 .result-box {
     margin-top: 30px;
     padding: 25px;
@@ -79,7 +74,6 @@ textarea, .stTextArea textarea {
     animation: popIn 0.5s ease-in-out;
 }
 
-/* 🎯 Titles */
 .main-title {
     font-size: 3rem;
     font-weight: 800;
@@ -97,7 +91,6 @@ textarea, .stTextArea textarea {
     margin-bottom: 2rem;
 }
 
-/* 💫 Footer */
 footer {
     text-align: center;
     font-size: 0.9rem;
@@ -106,7 +99,6 @@ footer {
     color: #cccccc;
 }
 
-/* Animations */
 @keyframes fadeIn {
     0% {opacity: 0; transform: translateY(-20px);}
     100% {opacity: 1; transform: translateY(0);}
@@ -118,17 +110,23 @@ footer {
 </style>
 """, unsafe_allow_html=True)
 
+# display the title and subtitle
+st.markdown("## 🧠 NewsVerdict ")
+st.markdown(
+    """
+    Verify Before You Trust :
+    Curious whether a news piece is genuine or misleading?  
+    Drop your news snippet below and let **NewsVerdict** analyze its authenticity with precision and intelligence. 
+    """
+)
+st.markdown("####  Paste the news content you'd like to evaluate:")
 
-
-# -------------------- TITLE --------------------
-st.markdown("<div class='main-title'>📰 Real vs Fake News Classifier</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>Paste any news snippet to test if it's authentic</div>", unsafe_allow_html=True)
-
-# -------------------- LOAD MODELS --------------------
+# define model paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, '..', 'models', 'news_classifier.pkl')
 VECTORIZER_PATH = os.path.join(BASE_DIR, '..', 'models', 'tfidf_vectorizer.pkl')
 
+# load model and vectorizer
 @st.cache_resource
 def load_model():
     try:
@@ -138,12 +136,12 @@ def load_model():
             vectorizer = pickle.load(v)
         return model, vectorizer
     except FileNotFoundError:
-        st.error("❌ Model files not found!")
+        st.error("❌ model files not found!")
         st.stop()
 
 model, vectorizer = load_model()
 
-# -------------------- PREPROCESSING --------------------
+# preprocess user input
 @st.cache_data(show_spinner=False)
 def preprocess(text):
     stemmer = PorterStemmer()
@@ -153,19 +151,19 @@ def preprocess(text):
     words = [stemmer.stem(word) for word in words if word not in stopwords.words('english')]
     return " ".join(words)
 
-# -------------------- INPUT --------------------
+# user input box
 user_input = st.text_area(
-    "🔍 Paste the news content here:",
+    "🔍Enter news content below:",
     height=200,
-    placeholder="Example: The government announced major new reforms..."
+    placeholder="example: the government announced major new reforms..."
 )
 
-# -------------------- PREDICT --------------------
-if st.button("🚀 Detect Now"):
+# prediction button
+if st.button("🚀 detect now"):
     if not user_input.strip():
-        st.warning("⚠️ Please enter some text.")
+        st.warning("⚠️ please enter some text.")
     else:
-        with st.spinner("Analyzing..."):
+        with st.spinner("analyzing..."):
             clean_text = preprocess(user_input)
             vectorized = vectorizer.transform([clean_text])
             prediction = model.predict(vectorized)[0]
@@ -173,23 +171,23 @@ if st.button("🚀 Detect Now"):
             confidence = round(np.max(proba) * 100, 2)
 
             if prediction == 1:
-                label = "🟢 REAL NEWS"
+                label = "🟢 real news"
                 bg = "#2ecc71"
             else:
-                label = "🔴 FAKE NEWS"
+                label = "🔴 fake news"
                 bg = "#e74c3c"
 
             st.markdown(f"""
                 <div class="result-box" style="background-color: {bg};">
                     {label}<br>
-                    <div style='font-size: 1rem; margin-top: 10px;'>Confidence: {confidence}%</div>
+                    <div style='font-size: 1rem; margin-top: 10px;'>confidence: {confidence}%</div>
                 </div>
             """, unsafe_allow_html=True)
 
-# -------------------- FOOTER --------------------
+# footer
 st.markdown("""
 <footer>
     <hr>
-    Built with ❤️ using <b>Streamlit</b> and <b>NLP</b> • 2025
+    built with ❤️ using <b>Streamlit</b>  • 2025
 </footer>
 """, unsafe_allow_html=True)
