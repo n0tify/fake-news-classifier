@@ -1,42 +1,26 @@
-"data/*.csv" 
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
-
-# Virtual environment
+# Ignore virtual environment
 venv/
 .env/
-ENV/
-env.bak/
 
-# VS Code
-.vscode/
-
-# Data files
+# Ignore dataset files
+data/*.csv
 *.csv
-*.tsv
-*.json
-*.xlsx
-*.xls
-*.db
-*.sqlite3
 
-# Model weights or checkpoints
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore model checkpoints and logs
 *.h5
-*.hdf5
-*.ckpt
-*.pth
-*.pt
-*.joblib
 *.pkl
-*.sav
-
-# Logs
+*.joblib
 *.log
 
-# Large file system
-*.lfs
+# VS Code settings
+.vscode/
+
+# Ignore large files
+*.zip
+*.tar.gz
+*.rar
+.DS_Store
